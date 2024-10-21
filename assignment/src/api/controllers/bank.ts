@@ -29,7 +29,7 @@ export function handleLending(req: Request, res: Response) {
 
         res.status(200).json({
             status: config.SUCCESS,
-            message: 'New user created',
+            message: 'New loan successfully alloted',
             data: getNewLoan
         })
         return
@@ -45,7 +45,7 @@ export function handleLending(req: Request, res: Response) {
     }
 }
 
-export function handlePayment(req: Request, res: Response) {
+export async function handlePayment(req: Request, res: Response) {
     try {
         const { userId, loanId, amount, type } = req.body
 
@@ -63,7 +63,7 @@ export function handlePayment(req: Request, res: Response) {
         }
 
         if(
-            type === config.LUMP_SUM && !amount
+            type.toLowerCase() === config.LUMP_SUM && !amount
         ) {
             res.status(400).json({
                 status: config.ERROR,
@@ -73,7 +73,17 @@ export function handlePayment(req: Request, res: Response) {
             return
         }
 
-        const makePayment = banking_services.payment(userId, loanId, amount, type);
+        if (
+            type.toLowerCase() === config.EMI && amount
+        ) {
+            res.status(400).json({
+                status: config.ERROR,
+                message: "Cannot specify amount for EMI payment",
+                data: {}
+            })
+        }
+
+        const makePayment = await banking_services.payment(userId, loanId, amount, type.toLowerCase());
 
         res.status(200).json({
             status: config.SUCCESS,

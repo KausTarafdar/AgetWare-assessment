@@ -92,7 +92,11 @@ export function handleGetLedger(req: Request, res: Response) {
         res.status(200).json({
             status: config.SUCCESS,
             message: 'Retrieved ledger for loan',
-            data: getLedger
+            data: {
+                userId: userId,
+                loanId: loanId,
+                ledger: getLedger
+            }
         })
         return
 
