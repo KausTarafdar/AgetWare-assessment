@@ -1,0 +1,146 @@
+{
+	"info": {
+		"_postman_id": "211208c9-5029-4f52-95fa-08af81404e92",
+		"name": "Agetware-assessment",
+		"description": "Following is a demonstration as well as documentation for the API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30446940"
+	},
+	"item": [
+		{
+			"name": "create_user",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"KayTee\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/user/account",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"user",
+						"account"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "new_loan",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"userId\": \"bfae9ccb-5072-44d8-9095-440ecc068f46\",\n    \"loanAmount\": 100000,\n    \"period\": 5,\n    \"interest\": 12\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/bank/loan",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"bank",
+						"loan"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "make_payment",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"userId\": \"bfae9ccb-5072-44d8-9095-440ecc068f46\",\n    \"loanId\": \"ed9113a6-e858-4d82-abca-2f4b38f4885d\",\n    \"type\": \"EMI\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/bank/payment",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"bank",
+						"payment"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "loan_status",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/api/user/bfae9ccb-5072-44d8-9095-440ecc068f46/loans",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"user",
+						"bfae9ccb-5072-44d8-9095-440ecc068f46",
+						"loans"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "check_ledger",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/api/user/bfae9ccb-5072-44d8-9095-440ecc068f46/ed9113a6-e858-4d82-abca-2f4b38f4885d/ledger",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"user",
+						"bfae9ccb-5072-44d8-9095-440ecc068f46",
+						"ed9113a6-e858-4d82-abca-2f4b38f4885d",
+						"ledger"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
