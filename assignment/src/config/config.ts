@@ -6,5 +6,7 @@ export const config = {
     PORT: process.env.PORT || '8000' ,
     DB: process.env.DB!,
     LUMP_SUM: 'lump_sum',
-    EMI: 'emi'
+    EMI: 'emi',
+    SUCCESS: 'success',
+    ERROR: 'error'
 }

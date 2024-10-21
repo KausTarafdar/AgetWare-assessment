@@ -1,7 +1,7 @@
 import { ILoanInfo, ITransactionInfo } from "../models";
 
 export function isLoan(loan: any): loan is ILoanInfo{
-    return (loan as ILoanInfo).loan_id !== undefined;
+    return (loan.id !== undefined);
 }
 
 export function isLoanArray(loanArray: any): loanArray is ILoanInfo[] {
@@ -9,7 +9,7 @@ export function isLoanArray(loanArray: any): loanArray is ILoanInfo[] {
 }
 
 function isTransaction(trans: any): trans is ITransactionInfo{
-    return (trans as ITransactionInfo).tran_id !== undefined;
+    return (trans.id !== undefined)
 }
 
 export function isTransactionArray(transArray: any): transArray is ITransactionInfo[] {

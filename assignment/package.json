@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start:dev" : "tsx src/index.ts",
+    "start:dev" : "tsx watch src/index.ts",
     "build" : "tsc -b",
     "start:prod" : "npm run build && node dist/index.js",
-    "migrate:reset" : "rm -f bank.db && touch bank.db && node migrations/migrations.js"
+    "migrate:reset" : "rm -f bank.db && touch bank.db && node migrations.js"
   },
   "keywords": [],
   "author": "",

@@ -62,7 +62,7 @@ export class BankRepository {
     public addLoan(loan: ILoanInfo) {
         try {
             const query = DB.prepare(`INSERT INTO loan(id, customer_id, loan_amount, loan_period, rate, payable)
-                                    VALUES('${loan.loan_id}','${loan.cust_id}',${loan.loan_amount},${loan.loan_period},${loan.loan_period}, ${loan.rate}, ${loan.payable})`);
+                                    VALUES('${loan.loan_id}','${loan.cust_id}',${loan.loan_amount},${loan.loan_period}, ${loan.rate}, ${loan.payable})`);
             const transaction = DB.transaction(() => {
                 const info = query.run();
                 console.log(`Added transaction: ${info.changes}`)
@@ -76,10 +76,11 @@ export class BankRepository {
 
     public updateLoan(loan: ILoanInfo) {
         try {
+            console.log(loan.payable, loan.loan_id)
             const query = DB.prepare(`UPDATE loan
-                                    SET update_at=CURRENT_TIMESTAMP,
+                                    SET updated_at=CURRENT_TIMESTAMP,
                                     payable=${loan.payable}
-                                    WHERE id=${loan.loan_id}`);
+                                    WHERE id='${loan.loan_id}'`);
             const transaction = DB.transaction(() => {
                 const info = query.run();
                 console.log(`Added transaction: ${info.changes}`)
@@ -126,7 +127,8 @@ export class BankRepository {
     public getOverview(user_id: string) {
         try {
             const result = DB.prepare(`SELECT * FROM loan
-                                    WHERE cust_id = '${user_id}'`).all()
+                                    WHERE customer_id = '${user_id}'`).all()
+            console.log(result)
             if(isLoanArray(result)) {
                 return result
             }

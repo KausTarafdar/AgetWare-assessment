@@ -24,7 +24,7 @@ interface IPayment {
     amountLeftToPay: number,
     newEmi?: number,
     numberOfEmis?: number,
-    durationleft: number
+    durationleftInMonths: number
 }
 
 interface ILoan {
@@ -90,7 +90,6 @@ export class Banking_services {
     public async payment(cust_id: string, loan_id: string, amount: number, type: string): Promise<IPayment> {
         const transaction_id = randomUUID().toString();
         let loan = await this.bankRepository.getLoan(loan_id);
-
         if (type === config.EMI) {
             //get the loan from db and calculate emi
             //deduct emi
@@ -118,7 +117,7 @@ export class Banking_services {
                 date: new Date(),
                 type: config.EMI,
                 amountLeftToPay: loan.payable,
-                durationleft: getMonthsLeft(loan.created_at!, loan.loan_period!, new Date()) / 12
+                durationleftInMonths: getMonthsLeft(loan.created_at!, loan.loan_period!, new Date())
             }
         }
         if (type === config.LUMP_SUM) {
@@ -127,6 +126,7 @@ export class Banking_services {
             //get no of months left
             //@ts-ignore
             const monthsLeft = getMonthsLeft(loan.created_at, loan.loan_period, new Date());
+            console.log(monthsLeft)
             //recalculate the emi
             // @ts-ignore
             const total_amount = loan.loan_amount + (loan.loan_amount * loan.loan_period * (loan.rate / 100));
@@ -142,6 +142,7 @@ export class Banking_services {
                 amount_paid: amount,
                 payment_type: config.LUMP_SUM,
             })
+
             return {
                 paid: amount,
                 date: new Date(),
@@ -149,7 +150,7 @@ export class Banking_services {
                 newEmi: new_emi,
                 numberOfEmis: loan.payable / new_emi,
                 amountLeftToPay: loan.payable,
-                durationleft: monthsLeft / 12
+                durationleftInMonths: monthsLeft
             }
         }
 
