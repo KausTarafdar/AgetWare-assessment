@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto"
-import { config } from "./config/config"
-import { BankRepository } from "./models"
-import { getMonthsLeft } from "./utils/getMonthLeft"
+import { config } from "../config/config"
+import { BankRepository } from "../models"
+import { getMonthsLeft } from "../utils/getMonthLeft"
 
 interface ICustomer {
     id: string,
