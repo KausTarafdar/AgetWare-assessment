@@ -1,23 +1,25 @@
 import Database from "better-sqlite3"
-import { config } from "../config/config";
+import { isLoan } from "../utils/typeguard";
 
 const DB = new Database('bank.db')
 
-interface IAccountInfo {
+export interface IAccountInfo {
     username: string,
     account_id: string,
 }
 
-interface ILoanInfo{
+export interface ILoanInfo{
     loan_id: string,
     cust_id?: string,
     loan_amount?: number,
     loan_period?: number,
     rate?: number,
     payable: number,
+    created_at?: Date,
+    updated_at?: Date
 }
 
-interface ITransaction {
+export interface ITransactionInfo {
     tran_id: string,
     cust_id: string,
     loan_id: string,
@@ -26,7 +28,7 @@ interface ITransaction {
 }
 
 export class BankRepository {
-    public async addAccount(customer: IAccountInfo){
+    public addAccount(customer: IAccountInfo){
         try {
             const query = DB.prepare(`INSERT INTO account(id, customer_name)
                                     VALUES('${customer.account_id}', '${customer.username}')`);
@@ -36,14 +38,28 @@ export class BankRepository {
             })
             transaction()
         } catch (err) {
-            if(err) {
-                console.log(err)
-            }
+            console.error(err)
             throw new Error('DB transaction error')
         }
     }
 
-    public async addLoan(loan: ILoanInfo) {
+    public async getLoan(loan_id: string){
+        try {
+            const result = await DB.prepare(`SELECT * FROM loan
+                                            where id = '${loan_id}'`).get();
+            if (isLoan(result)) {
+                return result
+            }
+            else {
+                throw new Error("No value returned");
+            }
+        } catch (err) {
+            console.error(err)
+            throw new Error("DB transaction error");
+        }
+    }
+
+    public addLoan(loan: ILoanInfo) {
         try {
             const query = DB.prepare(`INSERT INTO loan(id, customer_id, loan_amount, loan_period, rate, payable)
                                     VALUES('${loan.loan_id}','${loan.cust_id}',${loan.loan_amount},${loan.loan_period},${loan.loan_period}, ${loan.rate}, ${loan.payable})`);
@@ -53,14 +69,12 @@ export class BankRepository {
             })
             transaction()
         } catch (err) {
-            if(err) {
-                console.log(err)
-            }
+            console.error(err)
             throw new Error('DB transaction error')
         }
     }
 
-    public async updateLoan(loan: ILoanInfo) {
+    public updateLoan(loan: ILoanInfo) {
         try {
             const query = DB.prepare(`UPDATE loan
                                     SET update_at=CURRENT_TIMESTAMP,
@@ -72,14 +86,12 @@ export class BankRepository {
             })
             transaction()
         } catch (err) {
-            if(err) {
-                console.log(err)
-            }
+            console.error(err)
             throw new Error('DB transaction error')
         }
     }
 
-    public appendTransaction(trans: ITransaction) {
+    public appendTransaction(trans: ITransactionInfo) {
         try {
             const query = DB.prepare(`INSERT INTO ledger(id, cust_id, loan_id, amount_paid, payment_type)
                                     VALUES('${trans.tran_id}', '${trans.cust_id}', '${trans.loan_id}', ${trans.amount_paid}, '${trans.payment_type}')`);
@@ -89,9 +101,7 @@ export class BankRepository {
             })
             transaction()
         } catch (err) {
-            if(err) {
-                console.log(err)
-            }
+            console.error(err)
             throw new Error('DB transaction error')
         }
     }
