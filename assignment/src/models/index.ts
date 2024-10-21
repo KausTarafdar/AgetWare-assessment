@@ -1,5 +1,5 @@
-import Database from "better-sqlite3"
-import { isLoan } from "../utils/typeguard";
+import Database, { Transaction } from "better-sqlite3"
+import { isLoan, isLoanArray, isTransactionArray } from "../utils/typeguard";
 
 const DB = new Database('bank.db')
 
@@ -20,11 +20,11 @@ export interface ILoanInfo{
 }
 
 export interface ITransactionInfo {
-    tran_id: string,
+    tran_id?: string,
     cust_id: string,
     loan_id: string,
-    amount_paid: number,
-    payment_type: string
+    amount_paid?: number,
+    payment_type?: string
 }
 
 export class BankRepository {
@@ -91,6 +91,23 @@ export class BankRepository {
         }
     }
 
+    public getTransactions(trans: ITransactionInfo): ITransactionInfo[] {
+        try {
+            const result = DB.prepare(`SELECT * FROM ledger
+                                        where cust_id = '${trans.cust_id}'
+                                        AND loan_id = '${trans.loan_id}'`).all();
+            if (isTransactionArray(result)) {
+                return result
+            }
+            else {
+                throw new Error("No value returned");
+            }
+        } catch (err) {
+            console.error(err)
+            throw new Error("DB transaction error");
+        }
+    }
+
     public appendTransaction(trans: ITransactionInfo) {
         try {
             const query = DB.prepare(`INSERT INTO ledger(id, cust_id, loan_id, amount_paid, payment_type)
@@ -103,6 +120,23 @@ export class BankRepository {
         } catch (err) {
             console.error(err)
             throw new Error('DB transaction error')
+        }
+    }
+
+    public getOverview(user_id: string) {
+        try {
+            const result = DB.prepare(`SELECT * FROM loan
+                                    WHERE cust_id = '${user_id}'`).all()
+            if(isLoanArray(result)) {
+                return result
+            }
+            else {
+                throw new Error("No value returned");
+
+            }
+        } catch (err) {
+            console.error(err)
+            throw new Error("DB transaction error");
         }
     }
 }

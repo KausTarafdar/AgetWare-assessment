@@ -27,15 +27,6 @@ interface IPayment {
     durationleft: number
 }
 
-interface ITransaction {
-    id: string,
-    cust_id: string,
-    loan_id: string,
-    amount_paid: number,
-    type: string,
-    date: Date
-}
-
 interface ILoan {
     id: string,
     loan_amount: number,
@@ -75,7 +66,7 @@ export class Banking_services {
     // time = 2 (yrs)
     //interest = 5 (%) / 100 = 0.05
     //total amount = 30000 + (30000 * 2 * 0.05) = 33000
-    public lend(cust_id: string, loan_amount: number, period: number, interest: number): Promise<ILend> {
+    public lend(cust_id: string, loan_amount: number, period: number, interest: number): ILend {
         const loan_id = randomUUID().toString();
         const total_amount = loan_amount + (loan_amount * period * (interest / 100))
         const emi = (total_amount) / (period * 12)
@@ -156,7 +147,7 @@ export class Banking_services {
                 date: new Date(),
                 type: config.LUMP_SUM,
                 newEmi: new_emi,
-                numberOfEmis: monthsLeft,
+                numberOfEmis: loan.payable / new_emi,
                 amountLeftToPay: loan.payable,
                 durationleft: monthsLeft / 12
             }
@@ -167,11 +158,39 @@ export class Banking_services {
         }
     }
 
-    public ledger(cust_id: string, loan_id: string): ITransaction[] {
+    public ledger(cust_id: string, loan_id: string) {
         //return all transactions
+        const transactions = this.bankRepository.getTransactions({
+            cust_id: cust_id,
+            loan_id: loan_id
+        })
+
+        return transactions
     }
 
     public account_overview(cust_id: string): ILoan[]{
         //return all loans for a account id
+        const loans = this.bankRepository.getOverview(cust_id);
+        const loanInfo: ILoan[] = []
+
+        loans.forEach((loan) => {
+            let total_amount = loan.loan_amount! + (loan.loan_amount! * loan.loan_period! * (loan.rate! / 100));
+            let emi = this.caculateEmi(total_amount, loan.loan_period!);
+            let total_interest = total_amount - loan.loan_amount!;
+            let paid = total_amount - loan.payable;
+            let emis_left = loan.payable / emi;
+
+            loanInfo.push({
+                id: loan.loan_id,
+                loan_amount: loan.loan_amount!,
+                total_amount: total_amount,
+                total_interest: total_interest,
+                emi: emi,
+                paid: paid,
+                emis_left: emis_left
+            })
+        })
+
+        return loanInfo
     }
 }
